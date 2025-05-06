@@ -1,6 +1,7 @@
 from django.shortcuts import render
 from django.views import generic
 from .models import Item, MEAL_TYPE
+from django.views.generic import TemplateView
 
 class MenuList(generic.ListView):
     queryset = Item.objects.order_by("date_created")
@@ -16,3 +17,7 @@ class MenuList(generic.ListView):
 class MenuItemDetail(generic.DetailView):
     model = Item
     template_name = "menu_item_detail.html"
+
+
+class AboutPage(TemplateView):
+    template_name = "about.html"
