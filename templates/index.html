@@ -5,31 +5,21 @@
     <ul class="list-group list-group-flush">
         {% for meal in meals %}
             <h2 class="pt-5">{{ meal.1 }}</h2>
-                {% for row in item_list %}
-                    {% if row.meal_type == meal.0 %}
-                        {% if row.status == 0 %}
-                        <li class="list-group-item d-flex justify-content-between align-items-center border-0 pb-0">
-                            <a href = "{% url 'menu_item' row.pk %}"><h4><del>{{ row.meal }}</del></h4></a>
-                            <span class="badge bg-primary rounded-pill">€{{ row.price }}</span>
-                        </li>
-                        <li class="list-group-item pt-0">
-                            <p>{{ row.description }}</p>
-
-                            <a href="checkout" class="btn btn-outline-primary  px-3 py-1">Order Now</a>
-                        </li>
-                        {% else %}
-                            <li class="list-group-item d-flex justify-content-between align-items-center border-0 pb-0">
-                            <a href = "{% url 'menu_item' row.pk %}"><h4>{{ row.meal }}</h4></a>
-                                <span class="badge bg-primary rounded-pill">€{{ row.price }}</span>
-                            </li>
-                            <li class="list-group-item pt-0">
-                            <p>{{ row.description }}</p>
-
-                                <a href="checkout" class="btn btn-outline-primary px-3 py-1 ">Order Now</a>
-                            </li>
-                        {% endif %}
-                    {% endif %}
-                {% endfor %}
+            {% for row in item_list %}
+                {% if row.meal_type == meal.0 %}
+                    <li class="list-group-item d-flex justify-content-between align-items-center border-0 pb-0">
+                        <a href="{% url 'menu_item' row.pk %}"><h4>{{ row.meal }}</h4></a>
+                        <span class="badge bg-primary rounded-pill">€{{ row.price }}</span>
+                    </li>
+                    <li class="list-group-item pt-0">
+                        <p>{{ row.description }}</p>
+                        <form method="post" action="{% url 'add_to_cart' row.pk %}">
+                            {% csrf_token %}
+                            <button type="submit" class="btn btn-outline-primary px-3 py-1">Add to cart</button>
+                        </form>
+                    </li>
+                {% endif %}
+            {% endfor %}
         {% endfor %}
     </ul>
 </div>

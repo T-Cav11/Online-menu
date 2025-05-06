@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Item
+from .models import Item, About
 
 class MenuItemAdmin(admin.ModelAdmin):
     list_display = ("meal", "status")
@@ -9,3 +9,4 @@ class MenuItemAdmin(admin.ModelAdmin):
 
 
 admin.site.register(Item,MenuItemAdmin)
+admin.site.register(About)
