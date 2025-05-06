@@ -21,3 +21,6 @@ class MenuItemDetail(generic.DetailView):
 
 class AboutPage(TemplateView):
     template_name = "about.html"
+
+class CheckoutPage(TemplateView):
+    template_name = "checkout.html"

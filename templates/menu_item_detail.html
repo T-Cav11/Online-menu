@@ -3,11 +3,23 @@
 <div class="container py-5">
     <div class="card shadow-sm rounded-4">
         <div class="card-body">
-        <h1 class="card-title display-5" >{{ item.meal }}</h1>
-             <p class="card-text fs-5">{{ item.description }}</p>
-             <div class="d-flex justify-content-between align-items-center mt-4">
-            <span class="badge bg-success fs-6 px-3 py-2">€{{ item.price }}</span>
+            <h1 class="card-title display-5">{{ item.meal }}</h1>
+            <p class="card-text fs-5">{{ item.description }}</p>
+
+            {% if item.image %}
+            <div class="d-flex align-items-start mt-4">
+                <img src="{{ item.image.url }}" alt="{{ item.meal }}"
+                     class="img-thumbnail me-4"
+                     style="width: 300px; height: 300px; object-fit: cover;">
+
+                <div class="d-flex flex-column justify-content-end align-items-end" style="height: 300px;">
+                    <div class="d-flex gap-3 align-items-center">
+                        <span class="badge bg-success fs-5">€{{ item.price }}</span>
+                        <a href="checkout" class="btn btn-outline-primary rounded-pill px-4 py-2">Order Now</a>
+                    </div>
+                </div>
             </div>
+            {% endif %}
         </div>
     </div>
 </div>
