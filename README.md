@@ -11,6 +11,7 @@ This is a **Django-based web application** for a digital restaurant menu. Users 
 - Responsive design using Bootstrap 5
 - About page with static content and an image
 - Admin interface for managing menu items
+- Send email to user once order is complete containing the order details.
 
 ## 🛠 Tech Stack
 
