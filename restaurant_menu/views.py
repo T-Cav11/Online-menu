@@ -2,7 +2,7 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.views import generic
 from pyexpat.errors import messages
 from django.contrib import messages
-
+from django.core.mail import EmailMessage
 from .models import Item, MEAL_TYPE
 from django.views.generic import TemplateView
 
@@ -32,22 +32,53 @@ class CheckoutPage(TemplateView):
     template_name = "checkout.html"
 
     def get(self, request, *args, **kwargs):
-        cart = request.session.get('cart', {})
-        if not cart:
+        self.cart = request.session.get('cart', {})
+        if not self.cart:
             messages.warning(request, "Your cart is empty.")
             return redirect('home')
 
         form = CheckoutForm()
-        context = self.get_context_data(cart, form)
+        context = self.get_context_data(self.cart, form)
         return self.render_to_response(context)
 
     def post(self, request, *args, **kwargs):
         form = CheckoutForm(request.POST)
         if form.is_valid():
-            # You can process the order here: send an email, save to DB, etc.
+
+            # Get cleaned data for email confirmation
+            email = form.cleaned_data["email"]
+            name = form.cleaned_data["name"]
+
+            cart = request.session.get('cart', {})
+            items = []
+            total = 0
+            lines = []
+
+            for item_id, quantity in cart.items():
+                item = get_object_or_404(Item, pk=item_id)
+                subtotal = item.price * quantity
+                total += subtotal
+                lines.append(f"- {item.meal} x {quantity} = €{subtotal:.2f}")
+
+            lines.append(f"\nTotal: €{total:.2f}")
+
+
+
+            # Send email
+            message_body = (
+                    f"Hello {name},\n\n"
+                    "Thank you for your order. Here is a summary of your order:\n\n"
+                    + "\n".join(lines) +
+                    "\n\nWe appreciate your business!"
+            )
+            email_message = EmailMessage("Order confirmation", message_body, to=[email])
+            email_message.send()
             messages.success(request, "Order placed successfully!")
+
+            # Clear the Cart
             request.session['cart'] = {}  # clear cart
             request.session.modified = True
+
             return redirect("home")
         else:
             context = self.get_context_data()
