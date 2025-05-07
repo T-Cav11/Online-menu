@@ -7,7 +7,7 @@ from .models import Item, MEAL_TYPE
 from django.views.generic import TemplateView
 
 from .forms import CheckoutForm
-from .models import Order, OrderItem
+
 
 class MenuList(generic.ListView):
     queryset = Item.objects.order_by("date_created")
@@ -27,6 +27,7 @@ class MenuItemDetail(generic.DetailView):
 
 class AboutPage(TemplateView):
     template_name = "about.html"
+
 
 class CheckoutPage(TemplateView):
     template_name = "checkout.html"
