@@ -6,6 +6,9 @@ from django.contrib import messages
 from .models import Item, MEAL_TYPE
 from django.views.generic import TemplateView
 
+from .forms import CheckoutForm
+from .models import Order, OrderItem
+
 class MenuList(generic.ListView):
     queryset = Item.objects.order_by("date_created")
     template_name = "index.html"
@@ -26,6 +29,51 @@ class AboutPage(TemplateView):
     template_name = "about.html"
 
 class CheckoutPage(TemplateView):
+    template_name = "checkout.html"
+
+    def get(self, request, *args, **kwargs):
+        cart = request.session.get('cart', {})
+        if not cart:
+            messages.warning(request, "Your cart is empty.")
+            return redirect('home')
+
+        form = CheckoutForm()
+        context = self.get_context_data(cart, form)
+        return self.render_to_response(context)
+
+    def post(self, request, *args, **kwargs):
+        form = CheckoutForm(request.POST)
+        if form.is_valid():
+            # You can process the order here: send an email, save to DB, etc.
+            messages.success(request, "Order placed successfully!")
+            request.session['cart'] = {}  # clear cart
+            request.session.modified = True
+            return redirect("home")
+        else:
+            context = self.get_context_data()
+            context['form'] = form
+            return self.render_to_response(context)
+
+    def get_context_data(self, cart, form, **kwargs):
+        context = super().get_context_data(**kwargs)
+        cart = self.request.session.get('cart', {})
+        items = []
+        total = 0
+
+        for item_id, quantity in cart.items():
+            item = get_object_or_404(Item, pk=item_id)
+            item.quantity = quantity
+            item.subtotal = item.price * quantity
+            total += item.subtotal
+            items.append(item)
+
+        context['items'] = items
+        context['total'] = total
+        context['form'] = CheckoutForm()
+        return context
+
+
+class CartPage(TemplateView):
     template_name = "cart.html"
 
     def get_context_data(self, **kwargs):
@@ -33,8 +81,6 @@ class CheckoutPage(TemplateView):
         cart = self.request.session.get('cart', {})
         items = []
         total = 0
-
-
 
         for item_id, quantity in cart.items():
             try:
@@ -153,3 +199,4 @@ def clear_cart(request):
         request.session.modified = True
 
     return redirect('view_cart')
+

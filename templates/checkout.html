@@ -1,0 +1,50 @@
+{% extends 'base.html' %}
+{% load widget_tweaks %}
+{% block content %}
+
+<div class="container py-5">
+    <h1>Checkout</h1>
+
+    {% if items %}
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Item</th>
+                    <th>Quantity</th>
+                    <th>Price</th>
+                    <th>Subtotal</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for item in items %}
+                <tr>
+                    <td>{{ item.meal }}</td>
+                    <td>{{ item.quantity }}</td>
+                    <td>€{{ item.price }}</td>
+                    <td>€{{ item.subtotal }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+
+        <h4>Total: €{{ total }}</h4>
+
+           <form method="post" action="{% url 'checkout' %}" class="mt-4">
+            {% csrf_token %}
+            <div class="mb-3">
+                <label for="id_name" class="form-label">Name</label>
+                {{ form.name|add_class:"form-control"|attr:"id:id_name" }}
+            </div>
+            <div class="mb-3">
+                <label for="id_email" class="form-label">Email</label>
+                {{ form.email|add_class:"form-control"|attr:"id:id_email" }}
+            </div>
+
+            <button type="submit" class="btn btn-success">Place Order</button>
+        </form>
+    {% else %}
+        <p>Your cart is empty. <a href="{% url 'home' %}">Back to menu</a></p>
+    {% endif %}
+</div>
+
+{% endblock %}
